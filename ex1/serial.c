@@ -5,6 +5,7 @@
 
 #define MAX 16384 // 2^14
 
+// Prototypes
 double compute_sum(double v[], uint16_t);
 
 int main() {
