@@ -1,5 +1,5 @@
 serial: serial.c
-	gcc -o $@ $< -std=c99 -Wall -Wextra -Wpedantic -O3
+	gcc -o $@ $< -std=c99 -Wall -Wextra -Wpedantic
 
 run: serial
 	./serial
