@@ -5,30 +5,42 @@
 
 #define MAX 16384 // 2^14
 
+double compute_sum(double v[], uint16_t);
+
 int main() {
+    // ----- Generate vector v
     // Vector to hold the partial sums
     double v[MAX];
-
-    // Sum variable
-    double sum = 0;
-
-    // The actual sum (computed by wolfram alpha) with 16 digits of accuracy
-    double actual_sum = 1.644934066848226;
-
-    // Set the loop variable here, because we only need to initialize it once
-    uint16_t n = 1;
-    
-    // n = 2 ^ k, k = {3, 4, ... , 14}
-    for(uint8_t k = 3; k <= 14; k++) {
-	for(; n <= pow(2,k); n++) {
-	    // Compute the result and put it in the vector, even though it's
-	    // strictly not necessary on a single processor 
-	    v[n] = 1 / (double)(n * n);
-	    sum += v[n];
-    	}
-	// Print the iteration, and the error
-	printf("k = %d,\t error = %f\n", k, actual_sum - sum);
+    for(uint16_t i = 1; i <= MAX; i++) {
+	v[i] = 1 / (double)(i * i);
     }
-    
+
+    // ----- Compute sum S(n)
+    double total_sum = compute_sum(v, MAX);
+    printf("Total Sum: %f\n", total_sum);
+
+    // ----- Compute the error |S - S(n)|
+    // The actual sum (computed by wolfram alpha) with 16 digits of accuracy
+    double wolfram_sum = 1.644934066848226;
+    // New vector containing the errors
+    double e[11];
+    for(uint8_t k = 3; k <= 14; k++) {
+	double partial_sum = compute_sum(v, pow(2,k));
+	e[k-3] = fabs(wolfram_sum - partial_sum);
+    }
+
+    // ----- Print out the error |S - S(n)|
+    for(uint8_t i = 0; i <= 11; i++) {
+	printf("k = %d,\terror = %f\n", i+3, e[i]);
+    }
+
     return 0;
+}
+
+double compute_sum(double v[], uint16_t n) {
+    double sum = 0.0;
+    for(uint16_t i = 1; i <= n; i++) {
+	sum += v[i];
+    }
+    return sum;
 }
