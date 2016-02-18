@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
-
+#include <mpi.h>
 
 // Prototypes
 double compute_sum(double v[], uint16_t);
@@ -13,6 +13,15 @@ int main(int argc, char *argv[]) {
 	printf("Usage: ./only_omp.c limit\n limit is an integer\n");
 	return 1;
     }
+
+    int nprocs, my_rank;
+
+    // Initialize MPI
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+
+    
     uint8_t k = atoi(argv[1]);
     uint16_t n = pow(2, k);
     
