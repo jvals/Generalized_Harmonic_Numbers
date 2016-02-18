@@ -33,9 +33,11 @@ int main(int argc, char *argv[]) {
 
     // ----- Generate vector v
     // Vector to hold the partial sums
-    double v[n];
-    for(uint16_t i = 1; i <= n; i++) {
-        v[i] = 1 / (double)(i * i);
+    double *v = (double *) malloc(n);
+    if(my_rank == 0) {
+	for(uint16_t i = 1; i <= n; i++) {
+	    v[i] = 1 / (double)(i * i);
+	}
     }
 
     // ----- Compute sum S(n)
@@ -49,7 +51,8 @@ int main(int argc, char *argv[]) {
 
     // ----- Print out the error |S - S(n)|
     printf("n = %d,\terror = %f\n", n, error);
-    
+
+    free(v);
     return 0;
 }
 
