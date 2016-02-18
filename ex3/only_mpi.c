@@ -15,16 +15,22 @@ int main(int argc, char *argv[]) {
     }
 
     int nprocs, my_rank;
+    uint16_t n;
 
     // Initialize MPI
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 
-    
-    uint8_t k = atoi(argv[1]);
-    uint16_t n = pow(2, k);
-    
+    // Rank 0 does I/O
+    if(my_rank == 0) {
+        uint8_t k = atoi(argv[1]);
+	n = pow(2, k);
+    }
+
+    // Every rank needs to know the size of the problem
+    MPI_Bcast(&n, 1, MPI_UINT16_T, 0, MPI_COMM_WORLD);
+
     // ----- Generate vector v
     // Vector to hold the partial sums
     double v[n];
