@@ -8,7 +8,7 @@
 double compute_sum(double v[], uint16_t n, int my_rank, int nprocs);
 
 int main(int argc, char *argv[]) {
-    // Get input
+    // Check input
     if (argc < 2) {
         printf("Usage: ./only_omp.c limit\n limit is an integer\n");
         return 1;

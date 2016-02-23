@@ -9,7 +9,7 @@
 double compute_sum(double v[], uint16_t n, int my_rank, int nprocs);
 
 int main(int argc, char *argv[]) {
-    // Get input
+    // Check input
     if (argc < 2) {
         printf("Usage: ./only_omp.c limit\n limit is an integer\n");
         return 1;
@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 
+    // We need to check if MPI is providing the level of thread support
+    // that we require.
     if (provided != MPI_THREAD_FUNNELED) {
         printf("MPI_THREAD_FUNNELED is not available.\n");
         return 1;

@@ -7,7 +7,7 @@
 double compute_sum(double v[], uint16_t);
 
 int main(int argc, char *argv[]) {
-    // ----- Get input
+    // Check input
     if(argc < 2) {
         printf("Usage: ./serial.c limit\n limit is an integer\n");
         return 1;
