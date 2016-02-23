@@ -6,7 +6,7 @@
 #include <omp.h>
 
 // Prototypes
-double compute_sum(double v[], uint16_t n, int my_rank, int nprocs);
+double compute_sum(double v[], int elements_per_process);
 
 int main(int argc, char *argv[]) {
     // Check input
@@ -42,18 +42,25 @@ int main(int argc, char *argv[]) {
 
     // ----- Generate vector v
     // Vector to hold the partial sums
-    double *v = (double *) malloc(n * sizeof(double));
+    double *v;
     if (my_rank == 0) {
+        v = (double *) malloc(n * sizeof(double));
         for (uint16_t i = 1; i <= n; i++) {
             v[i-1] = 1 / (double)(i * i);
         }
     }
-    // Broadcast the generated vector to every rank
-    MPI_Bcast(v, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    // Each process only needs to allocate memory for it's own chunk of data
+    int elements_per_process = (n/nprocs);
+    double *scattered_v = (double *) malloc(elements_per_process * sizeof(double));
+    
+    // Send parts of the generated vector to every rank
+    MPI_Scatter(v,elements_per_process,MPI_DOUBLE, 
+        scattered_v, elements_per_process,MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     // ----- Compute sum S(n)
     double total_sum;
-    double partial_sum = compute_sum(v, n, my_rank, nprocs);
+    double partial_sum = compute_sum(scattered_v, elements_per_process);
     MPI_Reduce(&partial_sum, &total_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (my_rank == 0) {
@@ -68,19 +75,18 @@ int main(int argc, char *argv[]) {
         printf("n = %d,\terror = %.16f\n", n, error);
     }
 
-    free(v);
+    if (my_rank == 0) {
+        free(v);
+    }
+    free(scattered_v);
     MPI_Finalize();
     return 0;
 }
 
-double compute_sum(double v[], uint16_t n, int my_rank, int nprocs) {
+double compute_sum(double v[], int elements_per_process) {
     double sum = 0.0;
-
-    uint16_t my_start = (n * my_rank) / nprocs;
-    uint16_t my_stop = (n * (my_rank + 1)) / nprocs;
-    
 #   pragma omp parallel for reduction(+:sum) num_threads(4)
-    for (uint16_t i = my_start; i < my_stop; i++) {
+    for (uint16_t i = 0; i < elements_per_process; i++) {
         sum += v[i];
     }
 
