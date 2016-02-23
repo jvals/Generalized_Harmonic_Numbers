@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <mpi.h>
+#include <omp.h>
 
 // Prototypes
 double compute_sum(double v[], uint16_t n, int my_rank, int nprocs);
@@ -14,13 +15,19 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int nprocs, my_rank;
+    int nprocs, my_rank, provided;
     uint16_t n;
 
-    // Initialize MPI
-    MPI_Init(&argc, &argv);
+    // Initialize MPI. MPI_THREAD_FUNNELED specifies that only the main thread
+    // will make MPI calls. This allows MPI to do some optimization.
+    MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &provided);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+
+    if (provided != MPI_THREAD_FUNNELED) {
+        printf("MPI_THREAD_FUNNELED is not available.\n");
+        return 1;
+    }
 
     // Rank 0 does I/O
     if (my_rank == 0) {
