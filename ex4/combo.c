@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
 double compute_sum(double v[], uint16_t elements_per_process) {
     double sum = 0.0;
-#   pragma omp parallel for reduction(+:sum) num_threads(4)
+#   pragma omp parallel for reduction(+:sum) num_threads(4) schedule(guided)
     for (uint16_t i = 0; i < elements_per_process; i++) {
         sum += v[i];
     }
