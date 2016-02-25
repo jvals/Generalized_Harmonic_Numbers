@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     // Vector to hold the partial sums
     double v[n];
     for(uint16_t i = 1; i <= n; i++) {
-        v[i] = 1 / (double)(i * i);
+        v[i-1] = 1 / (double)(i * i);
     }
 
     // ----- Compute sum S(n)
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 double compute_sum(double v[], uint16_t n) {
     double sum = 0.0;
 #   pragma omp parallel for reduction(+:sum) num_threads(4)
-    for(uint16_t i = 1; i <= n; i++) {
+    for(uint16_t i = 0; i < n; i++) {
         sum += v[i];
     }
     return sum;
