@@ -6,7 +6,7 @@
 #include <omp.h>
 
 // Prototypes
-double compute_sum(double v[], int elements_per_process);
+double compute_sum(double v[], uint16_t elements_per_process);
 
 int main(int argc, char *argv[]) {
     // Check input
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Each process only needs to allocate memory for it's own chunk of data
-    int elements_per_process = (n/nprocs);
+    uint16_t elements_per_process = (n/nprocs);
     double *scattered_v = (double *) malloc(elements_per_process * sizeof(double));
     
     // Send parts of the generated vector to every rank
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-double compute_sum(double v[], int elements_per_process) {
+double compute_sum(double v[], uint16_t elements_per_process) {
     double sum = 0.0;
 #   pragma omp parallel for reduction(+:sum) num_threads(4)
     for (uint16_t i = 0; i < elements_per_process; i++) {
