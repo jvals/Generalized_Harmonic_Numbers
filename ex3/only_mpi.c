@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     // Every rank needs to know the size of the problem
     MPI_Bcast(&n, 1, MPI_UINT16_T, 0, MPI_COMM_WORLD);
 
-    // ----- Generate vector v
+    // Generate vector v
     // Vector to hold the partial sums
     double *v = (double *) malloc(n * sizeof(double));
     if (my_rank == 0) {
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     // Broadcast the generated vector to every rank
     MPI_Bcast(v, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    // ----- Compute sum S(n)
+    // Compute sum S(n)
     double total_sum;
     double partial_sum = compute_sum(v, n, my_rank, nprocs);
     MPI_Reduce(&partial_sum, &total_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -50,12 +50,12 @@ int main(int argc, char *argv[]) {
     if (my_rank == 0) {
         printf("Total Sum: %.16f\n", total_sum);
 
-        // ----- Compute the error |S - S(n)|
+        // Compute the error |S - S(n)|
         // The actual sum (computed by wolfram alpha) with 16 digits of accuracy
         double wolfram_sum = 1.644934066848226;
         double error = fabs(wolfram_sum - total_sum);
 
-        // ----- Print out the error |S - S(n)|
+        // Print out the error |S - S(n)|
         printf("n = %d,\terror = %.16f\n", n, error);
     }
 
