@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     if (my_rank == 0) {
         v = (double *) malloc(n * sizeof(double));
         for (uint16_t i = 1; i <= n; i++) {
-            v[i-1] = 1 / (double)(i * i);
+            v[i-1] = 1. / (i * i);
         }
     }
 

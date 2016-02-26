@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     // Vector to hold the partial sums
     double v[n];
     for(uint16_t i = 1; i <= n; i++) {
-        v[i-1] = 1 / (double)(i * i);
+        v[i-1] = 1. / (i * i);
     }
 
     // Compute sum S(n)
